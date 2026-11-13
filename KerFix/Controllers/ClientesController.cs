@@ -72,5 +72,22 @@ namespace KerFix.Controllers
 
             return Ok(cliente);
         }
+
+        //Metodo para eliminar un Cliente
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<Cliente>> BorrarCliente(int id)
+        {
+            var cliente = await _context.Clientes.FindAsync(id);
+
+            if ( cliente is null)
+            {
+                return NotFound("Cliente no encontrado");
+
+            }
+
+            _context.Clientes.Remove(cliente);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
