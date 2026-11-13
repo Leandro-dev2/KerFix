@@ -38,6 +38,25 @@ namespace KerFix.Data
                 entity.Property(e => e.Telefono)
                     .HasColumnName("telefono");
             });
+
+            modelBuilder.Entity<Servicio>(entity =>
+            {
+                entity.ToTable("servicio");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id");
+
+                entity.Property(e => e.Tipo)
+                    .HasColumnName("tipo");
+
+                entity.Property(e => e.Descripcion)
+                    .HasColumnName("descripcion");
+
+                entity.Property(e => e.Valor)
+                    .HasColumnName("valor");
+            });
         }
     }
 }
