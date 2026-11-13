@@ -1,0 +1,201 @@
+﻿<UserControl x:Class="KerfixDesktop.FormularioRepuestoView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="950"
+             d:DesignHeight="700"
+             Background="#F1F5F9"
+             FontFamily="Segoe UI">
+
+    <UserControl.Resources>
+
+        <Style x:Key="CampoTexto" TargetType="TextBox">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#253650"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="BotonFormulario" TargetType="Button">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="MinWidth" Value="140"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="16,0">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+
+        <Grid Margin="30,26">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ENCABEZADO -->
+            <StackPanel Grid.Row="0"
+                        Margin="0,0,0,25">
+
+                <TextBlock x:Name="TxtTitulo"
+                           Text="Nuevo repuesto"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="#142443"/>
+
+                <TextBlock
+                    Text="Ingresa los datos del componente"
+                    FontSize="15"
+                    Foreground="#64748B"
+                    Margin="0,5,0,0"/>
+
+            </StackPanel>
+
+            <!-- TARJETA DEL FORMULARIO -->
+            <Border Grid.Row="1"
+                    Background="White"
+                    CornerRadius="12"
+                    BorderBrush="#DEE5EF"
+                    BorderThickness="1"
+                    Padding="28"
+                    MaxWidth="780"
+                    HorizontalAlignment="Stretch">
+
+                <StackPanel>
+
+                    <TextBlock Text="Información del repuesto"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="#142443"
+                               Margin="0,0,0,24"/>
+
+                    <!-- TIPO DE REPUESTO -->
+                    <TextBlock Text="Tipo de repuesto"
+                               Style="{StaticResource Etiqueta}"/>
+
+                    <ComboBox x:Name="CmbTipoRepuesto"
+                              Height="44"
+                              FontSize="14"
+                              Padding="10,7"
+                              SelectedIndex="-1"
+                              BorderBrush="#CBD5E1"
+                              Margin="0,0,0,22">
+
+                        <ComboBoxItem Content="RAM"/>
+                        <ComboBoxItem Content="Almacenamiento"/>
+                        <ComboBoxItem Content="Placa"/>
+                        <ComboBoxItem Content="Vario"/>
+
+                    </ComboBox>
+
+                    <!-- ESPECIFICACION -->
+                    <TextBlock Text="Especificación"
+                               Style="{StaticResource Etiqueta}"/>
+
+                    <TextBox x:Name="TxtEspecificacion"
+                             Style="{StaticResource CampoTexto}"
+                             ToolTip="Ej. DDR4, SSD, HDD, NVMe M.2"
+                             Margin="0,0,0,22"/>
+
+                    <!-- CAPACIDAD Y CANTIDAD -->
+                    <Grid Margin="0,0,0,22">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+
+                            <TextBlock Text="Capacidad"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <TextBox x:Name="TxtCapacidad"
+                                     Style="{StaticResource CampoTexto}"
+                                     ToolTip="Ej. 8 GB, 500 GB, 1 TB"/>
+
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+
+                            <TextBlock Text="Cantidad"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <TextBox x:Name="TxtCantidad"
+                                     Style="{StaticResource CampoTexto}"
+                                     PreviewTextInput="SoloNumeros"
+                                     ToolTip="Cantidad de unidades"/>
+
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- PRECIO -->
+                    <TextBlock Text="Precio (CLP)"
+                               Style="{StaticResource Etiqueta}"/>
+
+                    <TextBox x:Name="TxtPrecio"
+                             Style="{StaticResource CampoTexto}"
+                             PreviewTextInput="SoloNumeros"
+                             ToolTip="Precio en pesos chilenos"
+                             Margin="0,0,0,28"/>
+
+                    <Border Height="1"
+                            Background="#E2E8F0"
+                            Margin="0,0,0,24"/>
+
+                    <!-- BOTONES -->
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right">
+
+                        <Button Content="Cancelar"
+                                Style="{StaticResource BotonFormulario}"
+                                Background="#E2E8F0"
+                                Foreground="#253650"
+                                Margin="0,0,12,0"
+                                Click="Cancelar_Click"/>
+
+                        <Button x:Name="BtnGuardar"
+                                Content="Guardar repuesto"
+                                Style="{StaticResource BotonFormulario}"
+                                Background="#0866CC"
+                                Foreground="White"
+                                Click="Guardar_Click"/>
+
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+
+        </Grid>
+    </ScrollViewer>
+</UserControl>

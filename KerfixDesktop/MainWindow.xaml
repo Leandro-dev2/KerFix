@@ -165,21 +165,29 @@
                             Background="#2867BD"
                             Click="Inicio_Click"/>
 
-                    <Button Content="♙   Clientes"
-                            Style="{StaticResource MenuButton}"/>
+                    <Button x:Name="BtnClientes"
+                            Content="♙   Clientes"
+                            Style="{StaticResource MenuButton}"
+                            Click="Clientes_Click"/>
 
-                    <Button Content="▤   Registros"
-                            Style="{StaticResource MenuButton}"/>
+                    <Button x:Name="BtnRegistros"
+                            Content="▤   Registros"
+                            Style="{StaticResource MenuButton}"
+                            Click="Registros_Click"/>
 
-                    <Button Content="⇥   Despachos"
-                            Style="{StaticResource MenuButton}"/>
+                    <Button x:Name="BtnDespachos"
+                            Content="⇥   Despachos"
+                            Style="{StaticResource MenuButton}"
+                            Click="Despachos_Click"/>
 
                     <Button x:Name="BtnInventario"
                             Content="▣   Inventario"
                             Style="{StaticResource MenuButton}"
                             Click="Inventario_Click"/>
-                    <Button Content="⚙   Servicios"
-                            Style="{StaticResource MenuButton}"/>
+                    <Button x:Name="BtnServicios"
+                            Content="⚙   Servicios"
+                            Style="{StaticResource MenuButton}"
+                            Click="Servicios_Click"/>
 
                 </StackPanel>
 
@@ -344,11 +352,13 @@
 
                     <Button Grid.Column="0"
                             Content="＋  Ingresar a Inventario"
-                            Style="{StaticResource ActionButton}"/>
+                            Style="{StaticResource ActionButton}"
+                            Click="IngresarInventario_Click"/>
 
                     <Button Grid.Column="2"
                             Content="＋  Nuevo Registro"
-                            Style="{StaticResource ActionButton}"/>
+                            Style="{StaticResource ActionButton}"
+                            Click="NuevoRegistroInicio_Click"/>
 
                 </Grid>
 
@@ -458,7 +468,30 @@
         <local:InventarioView x:Name="PanelInventario"
                              Grid.Column="1"
                              Visibility="Collapsed"/>
-
+        <!-- Formulario para agregar y editar repuestos -->
+        <local:FormularioRepuestoView
+            x:Name="PanelFormularioRepuesto"
+            Grid.Column="1"
+            Visibility="Collapsed"/>
+        <!-- Módulo Clientes -->
+        <local:ClientesView x:Name="PanelClientes"
+                    Grid.Column="1"
+                    Visibility="Collapsed"/>
+        <!-- Módulo Registros -->
+        <local:RegistroView x:Name="PanelRegistros"
+                    Grid.Column="1"
+                    Visibility="Collapsed"/>
+        <local:NuevoRegistroView x:Name="PanelNuevoRegistro"
+                    Grid.Column="1"
+                    Visibility="Collapsed"/>
+        <!-- Módulo Servicios -->
+        <local:ServicioView x:Name="PanelServicios"
+                    Grid.Column="1"
+                    Visibility="Collapsed"/>
+        <!-- Módulo Despachos -->
+        <local:DespachoView x:Name="PanelDespachos"
+                    Grid.Column="1"
+                    Visibility="Collapsed"/>
     </Grid>
 
 </Window>

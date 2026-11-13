@@ -1,0 +1,385 @@
+﻿<UserControl x:Class="KerfixDesktop.ServicioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1050"
+             d:DesignHeight="700"
+             Background="#F1F5F9"
+             FontFamily="Segoe UI">
+
+    <UserControl.Resources>
+
+        <Style x:Key="Tarjeta" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DCE4F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="18"/>
+        </Style>
+
+        <Style x:Key="Etiqueta" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#253650"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="Campo" TargetType="TextBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="25,22,25,20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ENCABEZADO -->
+        <StackPanel Grid.Row="0"
+                    Margin="0,0,0,22">
+
+            <TextBlock Text="Servicios"
+                       FontSize="29"
+                       FontWeight="Bold"
+                       Foreground="#122244"/>
+
+            <TextBlock Text="Gestión de servicios y precios"
+                       FontSize="15"
+                       Foreground="#64748B"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- CONTADOR Y NUEVO SERVICIO -->
+        <Grid Grid.Row="1"
+              Margin="0,0,0,22">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="380"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="190"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Style="{StaticResource Tarjeta}"
+                    Background="#E1ECFF">
+
+                <StackPanel>
+                    <TextBlock Text="Total de servicios"
+                               FontSize="14"
+                               Foreground="#253650"/>
+
+                    <TextBlock x:Name="TxtTotalServicios"
+                               Text="0"
+                               FontSize="32"
+                               FontWeight="Bold"
+                               Foreground="#122244"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Button Grid.Column="2"
+                    Content="＋  Nuevo servicio"
+                    Height="50"
+                    VerticalAlignment="Center"
+                    Background="#0866CC"
+                    Foreground="White"
+                    FontSize="14"
+                    FontWeight="SemiBold"
+                    BorderThickness="0"
+                    Cursor="Hand"
+                    Click="NuevoServicio_Click"/>
+        </Grid>
+
+        <!-- LISTADO Y PANEL DERECHO -->
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"
+                                  MinWidth="320"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="340"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LADO IZQUIERDO -->
+            <Grid Grid.Column="0">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- BUSCADOR -->
+                <TextBox x:Name="TxtBuscarServicio"
+                         Grid.Row="0"
+                         Height="45"
+                         Padding="12,10"
+                         FontSize="14"
+                         BorderBrush="#CBD5E1"
+                         ToolTip="Buscar por nombre o descripción"
+                         TextChanged="TxtBuscarServicio_TextChanged"/>
+
+                <!-- TABLA -->
+                <Border Grid.Row="2"
+                        Style="{StaticResource Tarjeta}">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock x:Name="TxtMostrandoServicios"
+                                   Text="Mostrando: 0 servicios"
+                                   FontSize="13"
+                                   Foreground="#64748B"
+                                   Margin="0,0,0,15"/>
+
+                        <DataGrid x:Name="TablaServicios"
+                                  Grid.Row="1"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="True"
+                                  SelectionMode="Single"
+                                  SelectionUnit="FullRow"
+                                  SelectionChanged="TablaServicios_SelectionChanged"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HeadersVisibility="Column"
+                                  RowHeight="46"
+                                  ColumnHeaderHeight="42"
+                                  AlternatingRowBackground="#F8FAFC"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#E2E8F0"
+                                  BorderBrush="#DCE3EC"
+                                  BorderThickness="1"
+                                  Background="White">
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="ID"
+                                                    Binding="{Binding Id}"
+                                                    Width="55"/>
+
+                                <DataGridTextColumn Header="Servicio"
+                                                    Binding="{Binding Tipo}"
+                                                    Width="150"/>
+
+                                <DataGridTextColumn Header="Descripción"
+                                                    Binding="{Binding Descripcion}"
+                                                    Width="240"/>
+
+                                <DataGridTextColumn Header="Valor"
+                                                    Binding="{Binding Valor, StringFormat={}{0:C0}}"
+                                                    Width="110"/>
+
+                                <DataGridTemplateColumn Header="Acciones"
+                                                        Width="95">
+
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Center">
+
+                                                <Button Content="✎"
+                                                        Width="34"
+                                                        Height="30"
+                                                        Margin="0,0,5,0"
+                                                        Background="#E8F1FF"
+                                                        Foreground="#0866CC"
+                                                        BorderThickness="0"
+                                                        Cursor="Hand"
+                                                        Tag="{Binding}"
+                                                        Click="EditarServicio_Click"/>
+
+                                                <Button Content="✕"
+                                                        Width="34"
+                                                        Height="30"
+                                                        Background="#FDECEF"
+                                                        Foreground="#DC3545"
+                                                        BorderThickness="0"
+                                                        Cursor="Hand"
+                                                        Tag="{Binding}"
+                                                        Click="EliminarServicio_Click"/>
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- LADO DERECHO -->
+            <Border Grid.Column="2"
+                    Style="{StaticResource Tarjeta}">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+
+                    <Grid>
+
+                        <!-- DETALLE DEL SERVICIO -->
+                        <StackPanel x:Name="PanelDetalle">
+
+                            <TextBlock Text="Detalle del servicio"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="#122244"
+                                       Margin="0,0,0,22"/>
+
+                            <TextBlock Text="ID"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <TextBlock x:Name="TxtDetalleId"
+                                       FontSize="15"
+                                       Foreground="#142443"
+                                       Margin="0,0,0,20"/>
+
+                            <TextBlock Text="Nombre del servicio"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <TextBlock x:Name="TxtDetalleTipo"
+                                       FontSize="15"
+                                       Foreground="#142443"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,20"/>
+
+                            <TextBlock Text="Descripción"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <Border Background="#F8FAFC"
+                                    CornerRadius="8"
+                                    Padding="12"
+                                    Margin="0,0,0,20">
+
+                                <TextBlock x:Name="TxtDetalleDescripcion"
+                                           Foreground="#475569"
+                                           FontSize="14"
+                                           TextWrapping="Wrap"/>
+                            </Border>
+
+                            <TextBlock Text="Valor (CLP)"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <TextBlock x:Name="TxtDetalleValor"
+                                       FontSize="24"
+                                       FontWeight="Bold"
+                                       Foreground="#0866CC"
+                                       Margin="0,0,0,30"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="0"
+                                        Content="✎  Editar"
+                                        Height="43"
+                                        Background="#E2E8F0"
+                                        Foreground="#142443"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        Click="EditarSeleccionado_Click"/>
+
+                                <Button Grid.Column="2"
+                                        Content="Eliminar"
+                                        Height="43"
+                                        Background="#FDECEF"
+                                        Foreground="#DC3545"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        Click="EliminarSeleccionado_Click"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- FORMULARIO NUEVO / EDITAR -->
+                        <StackPanel x:Name="PanelFormulario"
+                                    Visibility="Collapsed">
+
+                            <TextBlock x:Name="TxtTituloFormulario"
+                                       Text="Nuevo servicio"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="#122244"
+                                       Margin="0,0,0,25"/>
+
+                            <TextBlock Text="Nombre del servicio"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <TextBox x:Name="TxtNombreServicio"
+                                     Style="{StaticResource Campo}"
+                                     Height="43"
+                                     Margin="0,0,0,20"/>
+
+                            <TextBlock Text="Descripción"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <TextBox x:Name="TxtDescripcionServicio"
+                                     Style="{StaticResource Campo}"
+                                     Height="120"
+                                     TextWrapping="Wrap"
+                                     AcceptsReturn="True"
+                                     VerticalContentAlignment="Top"
+                                     VerticalScrollBarVisibility="Auto"
+                                     Margin="0,0,0,20"/>
+
+                            <TextBlock Text="Valor (CLP)"
+                                       Style="{StaticResource Etiqueta}"/>
+
+                            <TextBox x:Name="TxtValorServicio"
+                                     Style="{StaticResource Campo}"
+                                     Height="43"
+                                     PreviewTextInput="SoloNumeros"
+                                     Margin="0,0,0,30"/>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="0"
+                                        Content="Cancelar"
+                                        Height="43"
+                                        Background="#E2E8F0"
+                                        Foreground="#253650"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        Click="Cancelar_Click"/>
+
+                                <Button x:Name="BtnGuardarServicio"
+                                        Grid.Column="2"
+                                        Content="Guardar servicio"
+                                        Height="43"
+                                        Background="#0866CC"
+                                        Foreground="White"
+                                        FontWeight="SemiBold"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        Click="GuardarServicio_Click"/>
+                            </Grid>
+                        </StackPanel>
+
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

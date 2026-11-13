@@ -1,0 +1,330 @@
+﻿<UserControl x:Class="KerfixDesktop.ClientesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1050"
+             d:DesignHeight="700"
+             Background="#F1F5F9"
+             FontFamily="Segoe UI">
+
+    <UserControl.Resources>
+
+        <Style x:Key="TarjetaCliente" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderBrush" Value="#DCE4F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="20"/>
+        </Style>
+
+        <Style x:Key="BotonCliente" TargetType="Button">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="26,22,26,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ENCABEZADO -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,22">
+            <TextBlock Text="Clientes"
+                       FontSize="29"
+                       FontWeight="Bold"
+                       Foreground="#122244"/>
+
+            <TextBlock Text="Gestión de clientes registrados"
+                       FontSize="15"
+                       Foreground="#64748B"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- ESTADÍSTICAS Y NUEVO CLIENTE -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    Style="{StaticResource TarjetaCliente}"
+                    Background="#E1ECFF">
+                <StackPanel>
+                    <TextBlock Text="Total clientes"
+                               FontSize="14"
+                               Foreground="#253650"/>
+                    <TextBlock x:Name="TxtTotalClientes"
+                               Text="0"
+                               FontSize="31"
+                               FontWeight="Bold"
+                               Foreground="#122244"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Style="{StaticResource TarjetaCliente}"
+                    Background="#E1ECFF">
+                <StackPanel>
+                    <TextBlock Text="Atenciones"
+                               FontSize="14"
+                               Foreground="#253650"/>
+                    <TextBlock x:Name="TxtTotalAtenciones"
+                               Text="0"
+                               FontSize="31"
+                               FontWeight="Bold"
+                               Foreground="#122244"
+                               Margin="0,5,0,0"/>
+                </StackPanel>
+            </Border>
+
+
+        </Grid>
+
+        <!-- BUSCADOR -->
+        <Grid Grid.Row="2" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="15"/>
+                <ColumnDefinition Width="135"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="TxtBuscarCliente"
+                     Grid.Column="0"
+                     Height="43"
+                     Padding="12,10"
+                     FontSize="14"
+                     BorderBrush="#CBD5E1"
+                     ToolTip="Buscar por nombre o teléfono"
+                     TextChanged="TxtBuscarCliente_TextChanged"/>
+
+            <Button x:Name="BtnFiltroClientes"
+                    Grid.Column="2"
+                    Content="⚲  Filtrar"
+                    Height="43"
+                    FontSize="14"
+                    Background="White"
+                    BorderBrush="#CBD5E1"
+                    Cursor="Hand"
+                    Click="BtnFiltroClientes_Click">
+
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Todos"
+                                  Tag="Todos"
+                                  Click="FiltroClientes_Click"/>
+                        <MenuItem Header="Con atenciones"
+                                  Tag="Con"
+                                  Click="FiltroClientes_Click"/>
+                        <MenuItem Header="Sin atenciones"
+                                  Tag="Sin"
+                                  Click="FiltroClientes_Click"/>
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+        </Grid>
+
+        <!-- TABLA Y RESUMEN -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="340"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- TABLA -->
+            <Border Grid.Column="0"
+                    Style="{StaticResource TarjetaCliente}">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock x:Name="TxtMostrandoClientes"
+                               Text="Mostrando: 0 clientes"
+                               FontSize="13"
+                               Foreground="#64748B"
+                               Margin="0,0,0,16"/>
+
+                    <DataGrid x:Name="TablaClientes"
+                              Grid.Row="1"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              SelectionUnit="FullRow"
+                              SelectionChanged="TablaClientes_SelectionChanged"
+                              RowHeight="45"
+                              ColumnHeaderHeight="42"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="#E2E8F0"
+                              AlternatingRowBackground="#F8FAFC"
+                              BorderBrush="#DCE3EC"
+                              BorderThickness="1"
+                              Background="White">
+
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID"
+                                                Binding="{Binding Id}"
+                                                Width="55"/>
+
+                            <DataGridTextColumn Header="Nombre"
+                                                Binding="{Binding Nombre}"
+                                                Width="*"
+                                                MinWidth="125"/>
+
+                            <DataGridTextColumn Header="Teléfono"
+                                                Binding="{Binding Telefono}"
+                                                Width="130"/>
+
+                            <DataGridTextColumn Header="Atenciones"
+                                                Binding="{Binding Atenciones}"
+                                                Width="85"/>
+
+                            <DataGridTemplateColumn Header="Acciones"
+                                                    Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Center">
+
+                                            <Button Content="✎"
+                                                    Width="35"
+                                                    Height="30"
+                                                    Margin="0,0,5,0"
+                                                    Foreground="#0866CC"
+                                                    Background="#E8F1FF"
+                                                    BorderThickness="0"
+                                                    Tag="{Binding}"
+                                                    Cursor="Hand"
+                                                    Click="EditarCliente_Click"/>
+
+                                            <Button Content="✕"
+                                                    Width="35"
+                                                    Height="30"
+                                                    Foreground="#DC3545"
+                                                    Background="#FDECEF"
+                                                    BorderThickness="0"
+                                                    Tag="{Binding}"
+                                                    Cursor="Hand"
+                                                    Click="EliminarCliente_Click"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+
+            <!-- RESUMEN DEL CLIENTE -->
+            <Border Grid.Column="2"
+                    Style="{StaticResource TarjetaCliente}">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+
+                    <StackPanel>
+                        <TextBlock Text="Resumen del cliente"
+                                   FontSize="19"
+                                   FontWeight="Bold"
+                                   Foreground="#122244"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,22"/>
+
+                        <TextBlock Text="Nombre"
+                                   FontWeight="SemiBold"
+                                   Foreground="#253650"/>
+
+                        <TextBlock x:Name="TxtDetalleNombre"
+                                   Text="Selecciona un cliente"
+                                   TextWrapping="Wrap"
+                                   Foreground="#475569"
+                                   Margin="0,5,0,18"/>
+
+                        <TextBlock Text="Teléfono"
+                                   FontWeight="SemiBold"
+                                   Foreground="#253650"/>
+
+                        <TextBlock x:Name="TxtDetalleTelefono"
+                                   Text="-"
+                                   Margin="0,5,0,18"
+                                   Foreground="#475569"/>
+
+                        <TextBlock Text="Atenciones"
+                                   FontWeight="SemiBold"
+                                   Foreground="#253650"/>
+
+                        <TextBlock x:Name="TxtDetalleAtenciones"
+                                   Text="-"
+                                   Foreground="#475569"
+                                   Margin="0,5,0,20"/>
+
+                        <Border Background="#E2E8F0"
+                                Height="1"
+                                Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Registros recientes"
+                                   FontSize="17"
+                                   FontWeight="Bold"
+                                   Foreground="#122244"
+                                   Margin="0,0,0,14"/>
+
+                        <ItemsControl x:Name="ListaRegistros">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#F8FAFC"
+                                            BorderBrush="#DFE5ED"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="11"
+                                            Margin="0,0,0,8">
+
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Equipo}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#122244"
+                                                       TextWrapping="Wrap"/>
+
+                                            <TextBlock Text="{Binding Fecha, StringFormat={}{0:dd/MM/yyyy}}"
+                                                       FontSize="12"
+                                                       Foreground="#64748B"
+                                                       Margin="0,5,0,0"/>
+
+                                            <TextBlock Text="{Binding Estado}"
+                                                       FontSize="12"
+                                                       Foreground="#0866CC"
+                                                       Margin="0,5,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock x:Name="TxtSinRegistros"
+                                   Text="Sin registros recientes."
+                                   FontSize="13"
+                                   Foreground="#64748B"
+                                   Visibility="Collapsed"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

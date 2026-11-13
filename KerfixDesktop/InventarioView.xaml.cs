@@ -15,19 +15,22 @@ namespace KerfixDesktop
         private ICollectionView vistaRepuestos;
         private string categoriaActual = "Todo";
 
+        // Eventos para abrir los formularios
+        public event EventHandler? SolicitarNuevoRepuesto;
+        public event Action<Repuesto>? SolicitarEditarRepuesto;
+
         public InventarioView()
         {
             InitializeComponent();
 
-            // Datos de prueba.
-            // Después vendrán desde nuestra API.
+            // DATOS TEMPORALES
             repuestos.Add(new Repuesto
             {
                 Id = 1,
                 TipoRepuesto = "Memoria RAM",
                 Especificacion = "DDR4",
                 Capacidad = "8 GB",
-                Categoria = "Ram",
+                Categoria = "RAM",
                 Cantidad = 5,
                 Precio = 18000
             });
@@ -60,7 +63,7 @@ namespace KerfixDesktop
                 TipoRepuesto = "Placa Wi-Fi",
                 Especificacion = "PCIe",
                 Capacidad = "-",
-                Categoria = "Placas",
+                Categoria = "Placa",
                 Cantidad = 4,
                 Precio = 15000
             });
@@ -71,17 +74,15 @@ namespace KerfixDesktop
                 TipoRepuesto = "Cable HDMI",
                 Especificacion = "v2.0",
                 Capacidad = "1.8 m",
-                Categoria = "Diverso",
+                Categoria = "Vario",
                 Cantidad = 10,
                 Precio = 4000
             });
 
-            // Conectar colección a la tabla.
             vistaRepuestos = CollectionViewSource
                 .GetDefaultView(repuestos);
 
             vistaRepuestos.Filter = FiltrarRepuesto;
-
             TablaInventario.ItemsSource = vistaRepuestos;
 
             ActualizarTotal();
@@ -93,7 +94,23 @@ namespace KerfixDesktop
             TxtTotalRepuestos.Text = repuestos.Count.ToString();
         }
 
-        // LOGICA DEL FILTRO
+        // COMPATIBILIDAD CON LOS FILTROS ANTERIORES
+        private string NormalizarTipo(string tipo)
+        {
+            return tipo.Trim().ToLowerInvariant() switch
+            {
+                "ram" => "RAM",
+                "placas" => "Placa",
+                "placa" => "Placa",
+                "diverso" => "Vario",
+                "vario" => "Vario",
+                "almacenamiento" => "Almacenamiento",
+                "todo" => "Todo",
+                _ => tipo
+            };
+        }
+
+        // FILTROS
         private bool FiltrarRepuesto(object objeto)
         {
             if (objeto is not Repuesto repuesto)
@@ -103,16 +120,20 @@ namespace KerfixDesktop
 
             bool coincideCategoria =
                 categoriaActual == "Todo" ||
-                repuesto.Categoria == categoriaActual;
+                NormalizarTipo(repuesto.Categoria) ==
+                NormalizarTipo(categoriaActual);
 
             bool coincideBusqueda =
                 string.IsNullOrWhiteSpace(busqueda) ||
                 repuesto.TipoRepuesto.Contains(
-                    busqueda, StringComparison.OrdinalIgnoreCase) ||
+                    busqueda,
+                    StringComparison.OrdinalIgnoreCase) ||
                 repuesto.Especificacion.Contains(
-                    busqueda, StringComparison.OrdinalIgnoreCase) ||
+                    busqueda,
+                    StringComparison.OrdinalIgnoreCase) ||
                 repuesto.Capacidad.Contains(
-                    busqueda, StringComparison.OrdinalIgnoreCase);
+                    busqueda,
+                    StringComparison.OrdinalIgnoreCase);
 
             return coincideCategoria && coincideBusqueda;
         }
@@ -124,25 +145,31 @@ namespace KerfixDesktop
             vistaRepuestos?.Refresh();
         }
 
-        // ABRIR MENU DE FILTROS
+        // ABRIR FILTROS
         private void BtnFiltrar_Click(
             object sender, RoutedEventArgs e)
         {
             if (BtnFiltrar.ContextMenu != null)
             {
-                BtnFiltrar.ContextMenu.PlacementTarget = BtnFiltrar;
+                BtnFiltrar.ContextMenu.PlacementTarget =
+                    BtnFiltrar;
+
                 BtnFiltrar.ContextMenu.IsOpen = true;
             }
         }
 
-        // SELECCIONAR CATEGORIA
+        // SELECCIONAR FILTRO
         private void Filtro_Click(
             object sender, RoutedEventArgs e)
         {
             if (sender is MenuItem opcion)
             {
-                categoriaActual = opcion.Tag?.ToString() ?? "Todo";
-                TxtFiltroActual.Text = "Mostrando: " + categoriaActual;
+                categoriaActual = NormalizarTipo(
+                    opcion.Tag?.ToString() ?? "Todo");
+
+                TxtFiltroActual.Text =
+                    "Mostrando: " + categoriaActual;
+
                 vistaRepuestos.Refresh();
             }
         }
@@ -151,10 +178,10 @@ namespace KerfixDesktop
         private void BtnRepuestos_Click(
             object sender, RoutedEventArgs e)
         {
-            // Ya estamos en esta sección.
+            // Ya estamos en Repuestos.
         }
 
-        // PESTAÑA VENTAS (FUTURO)
+        // PESTAÑA VENTAS
         private void BtnVentas_Click(
             object sender, RoutedEventArgs e)
         {
@@ -169,9 +196,7 @@ namespace KerfixDesktop
         private void NuevoRepuesto_Click(
             object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(
-                "Aquí abriremos el formulario para ingresar un repuesto.",
-                "Nuevo repuesto");
+            SolicitarNuevoRepuesto?.Invoke(this, EventArgs.Empty);
         }
 
         // EDITAR REPUESTO
@@ -181,10 +206,33 @@ namespace KerfixDesktop
             if (sender is Button boton &&
                 boton.Tag is Repuesto repuesto)
             {
-                MessageBox.Show(
-                    "Editar: " + repuesto.TipoRepuesto,
-                    "Editar repuesto");
+                SolicitarEditarRepuesto?.Invoke(repuesto);
             }
+        }
+
+        // ACTUALIZACIÓN LOCAL DE PRUEBA
+        public void ActualizarRepuestoLocal(
+            DatosRepuestoEventArgs datos)
+        {
+            if (!datos.EsEdicion || !datos.Id.HasValue)
+                return;
+
+            Repuesto? repuesto = repuestos
+                .FirstOrDefault(r => r.Id == datos.Id.Value);
+
+            if (repuesto == null)
+                return;
+
+            // Se modifica el registro existente
+            repuesto.TipoRepuesto = datos.TipoRepuesto;
+            repuesto.Especificacion = datos.Especificacion;
+            repuesto.Capacidad = datos.Capacidad;
+            repuesto.Categoria = datos.TipoRepuesto;
+            repuesto.Cantidad = datos.Cantidad;
+            repuesto.Precio = datos.Precio;
+
+            // Actualizar visualmente la tabla
+            vistaRepuestos.Refresh();
         }
 
         // ELIMINAR REPUESTO
@@ -209,7 +257,7 @@ namespace KerfixDesktop
         }
     }
 
-    // MODELO TEMPORAL DE LA INTERFAZ
+    // MODELO TEMPORAL
     public class Repuesto
     {
         public int Id { get; set; }
