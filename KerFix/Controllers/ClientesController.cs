@@ -17,6 +17,7 @@ namespace KerFix.Controllers
             _context = context;
         }
 
+        //Metodo para Obtener el listado de todos los clientes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cliente>>> ObtenerClientes()
         {
@@ -25,6 +26,21 @@ namespace KerFix.Controllers
             return Ok(clientes);
         }
 
+        //Metodo para obtener el cliente con un ID especifico
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Cliente>> ObtenerCliente(int id)
+        {
+            var cliente = await _context.Clientes.FindAsync(id);
+
+            if (cliente is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(cliente);
+        }
+
+        //Metodo para crear un nuevo cliente
         [HttpPost]
         public async Task<ActionResult<Cliente>> CrearCliente(Cliente cliente)
         {
@@ -32,7 +48,29 @@ namespace KerFix.Controllers
 
             await _context.SaveChangesAsync();
 
-            return StatusCode(201, cliente);
+            return CreatedAtAction(
+                nameof(ObtenerCliente),
+                new { id = cliente.Id },
+                cliente
+                );
+        }
+
+        //Metodo para editar un cliente especifico
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<Cliente>> EditarCliente(int id, [FromBody] Cliente datos)
+        {
+            var cliente = await _context.Clientes.FindAsync(id);
+
+            if (cliente is null)
+            {
+                return NotFound("Cliente no encontrado");
+            }
+            cliente.Nombre = datos.Nombre;
+            cliente.Telefono = datos.Telefono;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(cliente);
         }
     }
 }
