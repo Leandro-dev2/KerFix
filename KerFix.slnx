@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="KerFix/KerFix.csproj" />
+  <Project Path="KerfixDesktop/KerfixDesktop.csproj" Id="9635d9e3-6d77-4c54-bb3b-0c0380f12937" />
 </Solution>

@@ -1,0 +1,377 @@
+﻿<UserControl x:Class="KerfixDesktop.InventarioView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="#F1F5F9"
+             FontFamily="Segoe UI"
+             d:DesignWidth="1050"
+             d:DesignHeight="700">
+
+
+    <UserControl.Resources>
+
+        <!-- BOTONES PRINCIPALES -->
+        <Style x:Key="BotonPrincipal" TargetType="Button">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#142443"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="9"
+                                BorderBrush="#CCD6E5"
+                                BorderThickness="1">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Opacity"
+                                        Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTONES AZULES -->
+        <Style x:Key="BotonAzul"
+               TargetType="Button"
+               BasedOn="{StaticResource BotonPrincipal}">
+            <Setter Property="Background" Value="#0866CC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Height" Value="44"/>
+        </Style>
+
+        <!-- TARJETAS -->
+        <Style x:Key="Tarjeta" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="11"/>
+            <Setter Property="BorderBrush" Value="#DEE5EF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="18"/>
+        </Style>
+
+    </UserControl.Resources>
+
+    <!-- CONTENIDO DEL INVENTARIO -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+
+        <Grid Margin="28,24"
+              MinWidth="750">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- TITULO -->
+            <StackPanel Grid.Row="0"
+                        Margin="0,0,0,24">
+
+                <TextBlock Text="Inventario"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="#142443"/>
+
+                <TextBlock Text="Gestión de repuestos y ventas"
+                           FontSize="15"
+                           Foreground="#64748B"
+                           Margin="0,4,0,0"/>
+
+            </StackPanel>
+
+            <!-- REPUESTOS Y VENTAS -->
+            <Grid Grid.Row="1"
+                  Margin="0,0,0,24">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button x:Name="BtnRepuestos"
+                        Grid.Column="0"
+                        Content="▣   Repuestos"
+                        Style="{StaticResource BotonPrincipal}"
+                        Background="#0866CC"
+                        Foreground="White"
+                        Click="BtnRepuestos_Click"/>
+
+                <Button x:Name="BtnVentas"
+                        Grid.Column="2"
+                        Content="🛒   Ventas"
+                        Style="{StaticResource BotonPrincipal}"
+                        Click="BtnVentas_Click"/>
+
+            </Grid>
+
+            <!-- TOTAL DE REPUESTOS -->
+            <Border Grid.Row="2"
+                    Background="#E1EDFF"
+                    BorderBrush="#C9DCFA"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="22"
+                    Margin="0,0,0,24">
+
+                <StackPanel>
+
+                    <TextBlock Text="Total repuestos"
+                               FontSize="16"
+                               Foreground="#142443"/>
+
+                    <TextBlock x:Name="TxtTotalRepuestos"
+                               Text="0"
+                               FontSize="36"
+                               FontWeight="Bold"
+                               Foreground="#142443"
+                               Margin="0,5,0,0"/>
+
+                </StackPanel>
+
+            </Border>
+
+            <!-- BUSCADOR Y ACCIONES -->
+            <Grid Grid.Row="3"
+                  Margin="0,0,0,20">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="145"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="185"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- BUSCADOR -->
+                <TextBox x:Name="TxtBuscar"
+                         Grid.Column="0"
+                         Height="44"
+                         FontSize="14"
+                         Padding="12,10"
+                         VerticalContentAlignment="Center"
+                         BorderBrush="#CBD5E1"
+                         TextChanged="TxtBuscar_TextChanged"
+                         ToolTip="Buscar por nombre, especificación o capacidad"/>
+
+                <!-- FILTRAR -->
+                <Button x:Name="BtnFiltrar"
+                        Grid.Column="2"
+                        Content="⚲   Filtrar  ▾"
+                        Style="{StaticResource BotonPrincipal}"
+                        Height="44"
+                        FontSize="15"
+                        Click="BtnFiltrar_Click">
+
+                    <Button.ContextMenu>
+                        <ContextMenu>
+
+                            <MenuItem Header="Todo"
+                                      Tag="Todo"
+                                      Click="Filtro_Click"/>
+
+                            <Separator/>
+
+                            <MenuItem Header="Ram"
+                                      Tag="Ram"
+                                      Click="Filtro_Click"/>
+
+                            <MenuItem Header="Almacenamiento"
+                                      Tag="Almacenamiento"
+                                      Click="Filtro_Click"/>
+
+                            <MenuItem Header="Placas"
+                                      Tag="Placas"
+                                      Click="Filtro_Click"/>
+
+                            <MenuItem Header="Diverso"
+                                      Tag="Diverso"
+                                      Click="Filtro_Click"/>
+
+                        </ContextMenu>
+                    </Button.ContextMenu>
+
+                </Button>
+
+                <!-- NUEVO REPUESTO -->
+                <Button Grid.Column="4"
+                        Content="+  Nuevo Repuesto"
+                        Style="{StaticResource BotonAzul}"
+                        Click="NuevoRepuesto_Click"/>
+
+            </Grid>
+
+            <!-- TABLA DE REPUESTOS -->
+            <Border Grid.Row="4"
+                    Style="{StaticResource Tarjeta}"
+                    Padding="12"
+                    MinHeight="360">
+
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- FILTRO ACTUAL -->
+                    <TextBlock x:Name="TxtFiltroActual"
+                               Grid.Row="0"
+                               Text="Mostrando: Todo"
+                               FontSize="13"
+                               Foreground="#64748B"
+                               Margin="5,2,0,12"/>
+
+                    <!-- TABLA -->
+                    <DataGrid x:Name="TablaInventario"
+                              Grid.Row="1"
+                              HorizontalAlignment="Stretch"
+                              ColumnWidth="*"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              IsReadOnly="True"
+                              HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="#E2E8F0"
+                              RowHeight="43"
+                              ColumnHeaderHeight="45"
+                              AlternatingRowBackground="#F8FAFC"
+                              Background="White"
+                              BorderBrush="#DEE5EF"
+                              BorderThickness="1">
+
+
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="Padding" Value="10,0"/>
+                                <Setter Property="Background" Value="#F1F5F9"/>
+                                <Setter Property="Foreground" Value="#172334"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Padding" Value="8,0"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.CellStyle>
+
+                        <DataGrid.Columns>
+
+                            <!-- ID -->
+                            <DataGridTextColumn
+                                Header="ID"
+                                Binding="{Binding Id}"
+                                Width="70"/>
+
+                            <!-- REPUESTO -->
+                            <DataGridTextColumn
+                                Header="Repuesto"
+                                Binding="{Binding TipoRepuesto}"
+                                Width="2*"/>
+
+                            <!-- ESPECIFICACION -->
+                            <DataGridTextColumn
+                                Header="Especificación"
+                                Binding="{Binding Especificacion}"
+                                Width="1.5*"/>
+
+                            <!-- CAPACIDAD -->
+                            <DataGridTextColumn
+                                Header="Capacidad"
+                                Binding="{Binding Capacidad}"
+                                Width="*"/>
+
+                            <!-- CANTIDAD -->
+                            <DataGridTextColumn
+                                Header="Cantidad"
+                                Binding="{Binding Cantidad}"
+                                Width="*"/>
+
+                            <!-- PRECIO -->
+                            <DataGridTextColumn
+                                Header="Precio"
+                                Binding="{Binding Precio, StringFormat={}{0:N0} CLP}"
+                                Width="*"/>
+
+                            <!-- ACCIONES -->
+                            <DataGridTemplateColumn
+                                Header="Acciones"
+                                Width="120">
+
+                                <DataGridTemplateColumn.CellTemplate>
+
+                                    <DataTemplate>
+
+                                        <StackPanel Orientation="Horizontal"
+                                                    HorizontalAlignment="Center">
+
+                                            <!-- EDITAR -->
+                                            <Button Content="✎"
+                                                    Width="38"
+                                                    Height="30"
+                                                    Margin="2"
+                                                    Background="#0866CC"
+                                                    Foreground="White"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"
+                                                    ToolTip="Editar repuesto"
+                                                    Tag="{Binding}"
+                                                    Click="EditarRepuesto_Click"/>
+
+                                            <!-- ELIMINAR -->
+                                            <Button Content="✕"
+                                                    Width="38"
+                                                    Height="30"
+                                                    Margin="2"
+                                                    Background="#DC3545"
+                                                    Foreground="White"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"
+                                                    ToolTip="Eliminar repuesto"
+                                                    Tag="{Binding}"
+                                                    Click="EliminarRepuesto_Click"/>
+
+                                        </StackPanel>
+
+                                    </DataTemplate>
+
+                                </DataGridTemplateColumn.CellTemplate>
+
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+
+                </Grid>
+
+            </Border>
+
+        </Grid>
+
+    </ScrollViewer>
+
+</UserControl>

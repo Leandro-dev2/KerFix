@@ -1,0 +1,464 @@
+﻿<Window x:Class="KerfixDesktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:KerfixDesktop"
+        Title="KerFix Manager"
+        Height="750"
+        Width="1250"
+        MinHeight="650"
+        MinWidth="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#F1F5F9"
+        FontFamily="Segoe UI">
+
+    <Window.Resources>
+
+        <!-- BOTONES DEL MENU LATERAL -->
+        <Style x:Key="MenuButton" TargetType="Button">
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="Margin" Value="12,4"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Margin="20,0"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Background"
+                                        Value="#294A80"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- BOTONES PRINCIPALES -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="MinWidth" Value="200"/>
+            <Setter Property="Background" Value="#0866CC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="9">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter TargetName="Fondo"
+                                        Property="Background"
+                                        Value="#034A9A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TARJETAS -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="18"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="BorderBrush" Value="#DFE5ED"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- TEXTOS DE TABLA -->
+        <Style x:Key="TableText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Foreground" Value="#263247"/>
+        </Style>
+
+        <!-- ENCABEZADOS DE TABLA -->
+        <Style x:Key="TableHeader" TargetType="TextBlock"
+               BasedOn="{StaticResource TableText}">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#172334"/>
+        </Style>
+
+    </Window.Resources>
+
+    <!-- ESTRUCTURA PRINCIPAL -->
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ======================= -->
+        <!-- MENU LATERAL -->
+        <!-- ======================= -->
+
+        <!-- ======================= -->
+        <!-- CONTENIDO PRINCIPAL -->
+        <!-- ======================= -->
+
+        <!-- ======================= -->
+
+        <Border Grid.Column="0"
+                Background="#101F3D" RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.093"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="0.598"/>
+                </TransformGroup>
+            </Border.RenderTransform>
+
+            <DockPanel>
+
+                <!-- LOGO Y TITULO -->
+                <StackPanel DockPanel.Dock="Top"
+                            Margin="20,28,20,28">
+
+                    <Border Background="#395071"
+                            Height="1"
+                            Margin="0,25,0,0"/>
+                    <Image Source="/Images/logo.png"
+                               Width="185"
+                               Height="100"
+                               Stretch="Uniform"
+                               HorizontalAlignment="Center"/>
+
+                </StackPanel>
+
+                <!-- OPCIONES DE NAVEGACION -->
+                <StackPanel>
+
+                    <Button Content="⌂   Inicio"
+                            x:Name="BtnInicio"
+                            Style="{StaticResource MenuButton}"
+                            Background="#2867BD"
+                            Click="Inicio_Click"/>
+
+                    <Button Content="♙   Clientes"
+                            Style="{StaticResource MenuButton}"/>
+
+                    <Button Content="▤   Registros"
+                            Style="{StaticResource MenuButton}"/>
+
+                    <Button Content="⇥   Despachos"
+                            Style="{StaticResource MenuButton}"/>
+
+                    <Button x:Name="BtnInventario"
+                            Content="▣   Inventario"
+                            Style="{StaticResource MenuButton}"
+                            Click="Inventario_Click"/>
+                    <Button Content="⚙   Servicios"
+                            Style="{StaticResource MenuButton}"/>
+
+                </StackPanel>
+
+            </DockPanel>
+
+        </Border>
+
+        <!-- ======================= -->
+
+        <ScrollViewer x:Name="PanelInicio" Grid.Column="1"
+                      VerticalScrollBarVisibility="Auto">
+
+            <Grid Margin="25">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- TITULO -->
+                <StackPanel Grid.Row="0"
+                            Margin="5,5,0,22">
+
+                    <TextBlock Text="Panel principal"
+                               FontSize="29"
+                               FontWeight="Bold"
+                               Foreground="#122244"/>
+
+                    <TextBlock Text="Resumen del servicio técnico"
+                               FontSize="15"
+                               Foreground="#64748B"
+                               Margin="0,4,0,0"/>
+
+                </StackPanel>
+
+                <!-- ======================= -->
+                <!-- ESTADISTICAS -->
+                <!-- ======================= -->
+
+                <Grid Grid.Row="1"
+                      Margin="0,0,0,18">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- PENDIENTES -->
+                    <Border Grid.Column="0"
+                            Style="{StaticResource CardStyle}">
+
+                        <StackPanel>
+
+                            <TextBlock Text="Pendientes"
+                                       Foreground="#64748B"
+                                       FontSize="14"/>
+
+                            <TextBlock Text="12"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       Foreground="#172334"
+                                       Margin="0,8,0,8"/>
+
+                            <Border Height="4"
+                                    Background="#F59E0B"
+                                    CornerRadius="3"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <!-- EN REPARACION -->
+                    <Border Grid.Column="1"
+                            Style="{StaticResource CardStyle}">
+
+                        <StackPanel>
+
+                            <TextBlock Text="En reparación"
+                                       Foreground="#64748B"
+                                       FontSize="14"/>
+
+                            <TextBlock Text="7"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       Foreground="#172334"
+                                       Margin="0,8,0,8"/>
+
+                            <Border Height="4"
+                                    Background="#1477D4"
+                                    CornerRadius="3"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <!-- FINALIZADOS -->
+                    <Border Grid.Column="2"
+                            Style="{StaticResource CardStyle}">
+
+                        <StackPanel>
+
+                            <TextBlock Text="Finalizados"
+                                       Foreground="#64748B"
+                                       FontSize="14"/>
+
+                            <TextBlock Text="45"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       Foreground="#172334"
+                                       Margin="0,8,0,8"/>
+
+                            <Border Height="4"
+                                    Background="#16A34A"
+                                    CornerRadius="3"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <!-- REPUESTOS -->
+                    <Border Grid.Column="3"
+                            Style="{StaticResource CardStyle}">
+
+                        <StackPanel>
+
+                            <TextBlock Text="Repuestos"
+                                       Foreground="#64748B"
+                                       FontSize="14"/>
+
+                            <TextBlock Text="128"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       Foreground="#172334"
+                                       Margin="0,8,0,8"/>
+
+                            <Border Height="4"
+                                    Background="#9333EA"
+                                    CornerRadius="3"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                </Grid>
+
+                <!-- ======================= -->
+                <!-- ACCIONES RAPIDAS -->
+                <!-- ======================= -->
+
+                <Grid Grid.Row="2"
+                      Margin="5,0,5,22">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            Content="＋  Ingresar a Inventario"
+                            Style="{StaticResource ActionButton}"/>
+
+                    <Button Grid.Column="2"
+                            Content="＋  Nuevo Registro"
+                            Style="{StaticResource ActionButton}"/>
+
+                </Grid>
+
+                <!-- ======================= -->
+                <!-- HISTORIAL -->
+                <!-- ======================= -->
+
+                <Border Grid.Row="3"
+                        Style="{StaticResource CardStyle}"
+                        Margin="6,0,6,8"
+                        MinHeight="310">
+
+                    <Grid>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- ENCABEZADO HISTORIAL -->
+                        <Grid Grid.Row="0"
+                              Margin="0,0,0,18">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="260"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="Historial de registros"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="#172334"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox Grid.Column="1"
+                                     Height="36"
+                                     Padding="10,7"
+                                     FontSize="13"
+                                     Text="Buscar registros..."
+                                     Foreground="#64748B"
+                                     BorderBrush="#CBD5E1"/>
+
+                        </Grid>
+
+                        <!-- TABLA -->
+                        <DataGrid Grid.Row="1"
+                                  x:Name="TablaRegistros"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#E2E8F0"
+                                  BorderBrush="#DCE3EC"
+                                  BorderThickness="1"
+                                  RowHeight="40"
+                                  ColumnHeaderHeight="42"
+                                  AlternatingRowBackground="#F8FAFC"
+                                  Background="White">
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn
+                                    Header="N.º"
+                                    Binding="{Binding Id}"
+                                    Width="80"/>
+
+                                <DataGridTextColumn
+                                    Header="Cliente"
+                                    Binding="{Binding Cliente}"
+                                    Width="*"/>
+
+                                <DataGridTextColumn
+                                    Header="Equipo"
+                                    Binding="{Binding Equipo}"
+                                    Width="*"/>
+
+                                <DataGridTextColumn
+                                    Header="Servicio"
+                                    Binding="{Binding Servicio}"
+                                    Width="1.4*"/>
+
+                                <DataGridTextColumn
+                                    Header="Estado"
+                                    Binding="{Binding Estado}"
+                                    Width="*"/>
+
+                                <DataGridTextColumn
+                                    Header="Fecha"
+                                    Binding="{Binding Fecha}"
+                                    Width="1.2*"/>
+
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+
+                    </Grid>
+
+                </Border>
+
+            </Grid>
+
+        </ScrollViewer>
+
+        <!-- Inventario: ocupa solo el panel derecho -->
+        <local:InventarioView x:Name="PanelInventario"
+                             Grid.Column="1"
+                             Visibility="Collapsed"/>
+
+    </Grid>
+
+</Window>
