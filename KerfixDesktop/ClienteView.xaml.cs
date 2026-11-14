@@ -7,134 +7,36 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Net.Http;
+using KerfixDesktop.Services;
+using KerfixDesktop.Models;
 
 namespace KerfixDesktop
 {
     public partial class ClientesView : UserControl
     {
+        private readonly HttpClient _httpClient;
+
+        
+
+        private readonly ClienteApiService _clienteApiService;
         private ObservableCollection<ClienteDemo> clientes = new();
         private ICollectionView vistaClientes;
         private string filtroActual = "Todos";
 
         public ClientesView()
         {
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("https://localhost:7184/")
+            };
+
+            _clienteApiService = new ClienteApiService(_httpClient);
+
             InitializeComponent();
+            Loaded += ClientesView_Loaded;
 
-            // CLIENTES DE PRUEBA
-            clientes.Add(new ClienteDemo
-            {
-                Id = 101,
-                Nombre = "Constructora Andes SpA",
-                Telefono = "+56 9 8765 4321",
-                Atenciones = 7,
-                Registros = new()
-                {
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 11, 10),
-                        Equipo = "Notebook Dell",
-                        Estado = "Entregado"
-                    },
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 10, 20),
-                        Equipo = "PC Oficina",
-                        Estado = "Entregado"
-                    }
-                }
-            });
-
-            clientes.Add(new ClienteDemo
-            {
-                Id = 102,
-                Nombre = "Minera del Norte Ltda.",
-                Telefono = "+56 9 7123 9876",
-                Atenciones = 12,
-                Registros = new()
-                {
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 11, 12),
-                        Equipo = "Notebook HP",
-                        Estado = "Entregado"
-                    },
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 11, 3),
-                        Equipo = "PC Gamer",
-                        Estado = "En reparación"
-                    },
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 10, 28),
-                        Equipo = "All-in-One Lenovo",
-                        Estado = "Entregado"
-                    },
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 10, 15),
-                        Equipo = "Impresora Epson",
-                        Estado = "Entregado"
-                    }
-                }
-            });
-
-            clientes.Add(new ClienteDemo
-            {
-                Id = 103,
-                Nombre = "Servicios Industriales S.A.",
-                Telefono = "+56 9 9988 7766",
-                Atenciones = 5,
-                Registros = new()
-                {
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 11, 1),
-                        Equipo = "Notebook Acer",
-                        Estado = "Pendiente"
-                    }
-                }
-            });
-
-            clientes.Add(new ClienteDemo
-            {
-                Id = 104,
-                Nombre = "AgroEquipos Chile",
-                Telefono = "+56 9 6677 5544",
-                Atenciones = 9,
-                Registros = new()
-                {
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 11, 8),
-                        Equipo = "PC Escritorio",
-                        Estado = "Entregado"
-                    },
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 10, 26),
-                        Equipo = "Notebook ASUS",
-                        Estado = "Entregado"
-                    }
-                }
-            });
-
-            clientes.Add(new ClienteDemo
-            {
-                Id = 105,
-                Nombre = "Transporte Rivera",
-                Telefono = "+56 9 4433 2211",
-                Atenciones = 4,
-                Registros = new()
-                {
-                    new RegistroClienteDemo
-                    {
-                        Fecha = new DateTime(2026, 11, 5),
-                        Equipo = "Notebook Lenovo",
-                        Estado = "En reparación"
-                    }
-                }
-            });
+            
 
             vistaClientes = CollectionViewSource
                 .GetDefaultView(clientes);
@@ -144,8 +46,47 @@ namespace KerfixDesktop
 
             ActualizarEstadisticas();
 
-            TablaClientes.SelectedItem = clientes[1];
+          
         }
+
+
+        private async void ClientesView_Loaded(
+    object sender,
+    RoutedEventArgs e)
+        {
+            try
+            {
+                await RecargarClientesAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al cargar clientes: {ex.Message}");
+            }
+        }
+
+
+        public async Task RecargarClientesAsync()
+        {
+            var clientesApi = await _clienteApiService.ObtenerClientesAsync();
+
+            clientes.Clear();
+
+            foreach (var cliente in clientesApi)
+            {
+                clientes.Add(new ClienteDemo
+                {
+                    Id = cliente.Id,
+                    Nombre = cliente.Nombre,
+                    Telefono = cliente.Telefono,
+                    Atenciones = 0,
+                    Registros = new()
+                });
+            }
+
+            vistaClientes.Refresh();
+        }
+
 
         // ESTADÍSTICAS
         private void ActualizarEstadisticas()
@@ -293,38 +234,58 @@ namespace KerfixDesktop
 
         // EDITAR CLIENTE (PENDIENTE)
 
-        private void EditarCliente_Click(
+        private async void EditarCliente_Click(
             object sender, RoutedEventArgs e)
         {
             if (sender is Button boton &&
                 boton.Tag is ClienteDemo cliente)
             {
-                // Abrir ventana con los datos del cliente
                 var ventana = new EditarClienteWindow(cliente);
 
                 ventana.Owner = Window.GetWindow(this);
 
                 if (ventana.ShowDialog() == true)
                 {
-                    // Modificar el cliente existente
-                    cliente.Nombre = ventana.NombreEditado;
-                    cliente.Telefono = ventana.TelefonoEditado;
+                    try
+                    {
+                        var clienteActualizado = new Cliente
+                        {
+                            Id = cliente.Id,
+                            Nombre = ventana.NombreEditado,
+                            Telefono = ventana.TelefonoEditado
+                        };
 
-                    // Actualizar tabla y buscador
-                    vistaClientes.Refresh();
+                        await _clienteApiService.ActualizarClienteAsync(
+                            cliente.Id,
+                            clienteActualizado
+                            );
 
-                    // Actualizar panel derecho
-                    ActualizarDetalle(cliente);
+                        cliente.Nombre = clienteActualizado.Nombre;
+                        cliente.Telefono = clienteActualizado.Telefono;
 
-                    MessageBox.Show(
-                        "Cambios aplicados a los datos de prueba.\n" +
-                        "La actualización en la API está pendiente.",
-                        "KerFix Manager",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information);
+                        vistaClientes.Refresh();
+                        ActualizarVista();
+
+                        MessageBox.Show(
+                            "Cliente actualizado correctamente.",
+                            "KerFix Manager",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information
+                        );
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        MessageBox.Show(
+                            $"Error al actualizar el cliente: {ex.Message}",
+                            "KerFix Manager",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error
+                        );
+                    }
+                    
                 }
             }
-        }
+         }
 
 
         // ELIMINAR CLIENTE (PRUEBA LOCAL)

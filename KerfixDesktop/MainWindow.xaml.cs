@@ -3,18 +3,30 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Net.Http;
+using KerfixDesktop.Models;
+using KerfixDesktop.Services;
 
 namespace KerfixDesktop
 {
     public partial class MainWindow : Window
     {
+        private readonly HttpClient _httpClient;
+        private readonly RegistroApiService _registroApiService;
+        private readonly ClienteApiService _clienteApiService;
         private readonly Brush colorSeleccionado =
             new SolidColorBrush(Color.FromRgb(40, 103, 189));
 
         public MainWindow()
         {
             InitializeComponent();
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("https://localhost:7184/")
+            };
 
+            _registroApiService = new RegistroApiService(_httpClient);
+            _clienteApiService = new ClienteApiService(_httpClient);
             // ========================================
             // INVENTARIO
             // ========================================
@@ -74,14 +86,91 @@ namespace KerfixDesktop
                 MostrarRegistros();
             };
 
-            PanelNuevoRegistro.Guardado += (s, datos) =>
+            PanelNuevoRegistro.Guardado += async (s, datos) =>
             {
-                MessageBox.Show(
-                    "Formulario validado correctamente.\n" +
-                    "El guardado en la base de datos está pendiente.",
-                    "KerFix Manager",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                try
+                {
+                    int idCliente;
+
+                    // 1. Crear cliente o utilizar uno existente
+                    if (datos.ClienteNuevo)
+                    {
+                        var nuevoCliente = new Cliente
+                        {
+                            Nombre = datos.Nombre,
+                            Telefono = datos.Telefono
+                        };
+
+                        var clienteCreado =
+                            await _clienteApiService.CrearClienteAsync(nuevoCliente);
+
+                        idCliente = clienteCreado.Id;
+                    }
+                    else
+                    {
+                        if (datos.IdCliente is not int idExistente)
+                        {
+                            MessageBox.Show("Selecciona un cliente válido.");
+                            return;
+                        }
+
+                        idCliente = idExistente;
+                    }
+
+                    // 2. Por ahora, registrar solamente equipos nuevos
+                    if (!datos.EquipoNuevo)
+                    {
+                        MessageBox.Show(
+                            "Todavía debemos conectar los equipos existentes.",
+                            "KerFix Manager",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
+
+                        return;
+                    }
+
+                    // 3. Crear el registro de recepción
+                    var registro = new Registro
+                    {
+                        IdCliente = idCliente,
+                        Tipo = datos.Tipo,
+                        Marca = datos.Marca,
+                        Modelo = datos.Modelo,
+                        Serie = datos.Serie,
+                        DiagnosticoCliente = datos.Diagnostico
+                    };
+
+                    var registroCreado =
+                        await _registroApiService.CrearRegistroAsync(registro);
+
+                    MessageBox.Show(
+                        $"Registro N° {registroCreado.Id} creado correctamente.",
+                        "KerFix Manager",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+
+                    // 4. Regresar al listado
+                    MostrarRegistros();
+                }
+                catch (HttpRequestException ex)
+                {
+                    MessageBox.Show(
+                        $"Error al guardar los datos:\n\n{ex.Message}",
+                        "KerFix Manager",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        $"Ocurrió un error inesperado:\n\n{ex.Message}",
+                        "KerFix Manager",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+                }
             };
         }
 
@@ -158,12 +247,27 @@ namespace KerfixDesktop
         // CLIENTES
         // ========================================
 
-        private void Clientes_Click(
-            object sender, RoutedEventArgs e)
+        private async void Clientes_Click(
+    object sender, RoutedEventArgs e)
         {
             OcultarPaneles();
+
             PanelClientes.Visibility = Visibility.Visible;
+
             SeleccionarMenu("Clientes");
+
+            try
+            {
+                await PanelClientes.RecargarClientesAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"No se pudieron actualizar los clientes:\n{ex.Message}",
+                    "KerFix Manager",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         // ========================================

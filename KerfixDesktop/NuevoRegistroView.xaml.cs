@@ -3,11 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Net.Http;
+using KerfixDesktop.Services;
+using System.Linq;
 
 namespace KerfixDesktop
 {
     public partial class NuevoRegistroView : UserControl
     {
+        private readonly HttpClient _httpClient;
+        private readonly ClienteApiService _clienteApiService;
         public event EventHandler? Cancelado;
         public event EventHandler<NuevoRegistroDatos>? Guardado;
 
@@ -17,8 +22,51 @@ namespace KerfixDesktop
         {
             InitializeComponent();
 
-            CargarDatosPrueba();
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri("https://localhost:7184/")
+            };
+            _clienteApiService = new ClienteApiService(_httpClient);
+
             PrepararNuevo();
+
+            Loaded += NuevoRegistroView_Loaded;
+        
+        }
+
+        private async void NuevoRegistroView_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Cargar datos de prueba
+            try
+            {
+                var clientesApi = await _clienteApiService.ObtenerClientesAsync();
+
+                clientes.Clear();
+
+                foreach (var cliente in clientesApi)
+                {
+                    clientes.Add(new ClienteRegistroPrueba
+                    {
+                        Id = cliente.Id,
+                        Nombre = cliente.Nombre,
+                        Telefono = cliente.Telefono,
+                        Equipos = new List<EquipoRegistroPrueba>() // Aquí puedes agregar equipos si los tienes
+                    });
+                }
+
+                CmbClienteExistente.ItemsSource = null;
+                CmbClienteExistente.ItemsSource = clientes;
+            }
+
+            catch (HttpRequestException ex)
+            {
+                MessageBox.Show(
+                    "Error al obtener los clientes desde la API:\n" +
+                    ex.Message,
+                    "KerFix Manager",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         // ========================================
@@ -147,6 +195,7 @@ namespace KerfixDesktop
             CmbTipoEquipo.SelectedIndex = -1;
             TxtMarca.Clear();
             TxtModelo.Clear();
+            TxtSerie.Clear();
             TxtDiagnostico.Clear();
 
             TxtTelefonoExistente.Text = "";
@@ -229,6 +278,7 @@ namespace KerfixDesktop
                 });
 
                 CmbEquipoExistente.ItemsSource = equipos;
+                CmbEquipoExistente.SelectedItem = equipos.Last();
             }
 
             ActualizarPaneles();
@@ -343,6 +393,7 @@ namespace KerfixDesktop
 
                 datos.Marca = TxtMarca.Text.Trim();
                 datos.Modelo = TxtModelo.Text.Trim();
+                datos.Serie = TxtSerie.Text.Trim();
 
                 if (string.IsNullOrWhiteSpace(datos.Marca))
                 {
@@ -398,7 +449,7 @@ namespace KerfixDesktop
         public string Tipo { get; set; } = "";
         public string Marca { get; set; } = "";
         public string Modelo { get; set; } = "";
-
+        public string Serie { get; set; } = "";
         public string Diagnostico { get; set; } = "";
         public string Estado { get; set; } = "Pendiente";
     }

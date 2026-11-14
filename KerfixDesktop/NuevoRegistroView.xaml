@@ -213,10 +213,16 @@
 
                                 <TextBox x:Name="TxtModelo"
                                          Style="{StaticResource Campo}"/>
-
+                    
                             </StackPanel>
+                            
                         </Grid>
+                        <TextBlock Text="Número de serie"
+           Style="{StaticResource Etiqueta}"/>
 
+                        <TextBox x:Name="TxtSerie"
+         Style="{StaticResource Campo}"
+         Margin="0,0,0,18"/>
                     </StackPanel>
 
                     <!-- DIAGNÓSTICO Y ESTADO -->
